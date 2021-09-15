@@ -11,9 +11,6 @@ import java.util.Map;
 
 /**
  * httpUrl工具类
- * 
- * @author PengLian
- *
  */
 public class HttpUrlHandler {
 
