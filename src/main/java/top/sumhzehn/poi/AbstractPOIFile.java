@@ -19,7 +19,7 @@ public abstract class AbstractPOIFile {
 
     protected Workbook workbook;
 
-    public AbstractPOIFile importData(String filename, String[] titles, List<?> datas) throws POIFileException {
+    public AbstractPOIFile exportFile(String filename, String[] titles, List<?> datas) throws POIFileException {
         if(StrUtil.isEmpty(filename)) throw new POIFileException("Filename is not empty");
         importData(datas, titles);
         createFile(filename);
