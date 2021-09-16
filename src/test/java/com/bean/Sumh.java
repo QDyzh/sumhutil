@@ -4,16 +4,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import top.sumhzehn.annotation.excel.ExcelTitle;
 import top.sumhzehn.annotation.map.MapIsKey;
 import top.sumhzehn.annotation.map.MapIsValue;
 import top.sumhzehn.util.map.MapUtil;
 
 @MapIsValue
 public class Sumh {
-	
+
+	@ExcelTitle("唯一ID")
 	private Integer id;
-	
-	
+
+	@ExcelTitle("姓名")
 	private String name;
 	
 	public Sumh(Integer id, String name) {
