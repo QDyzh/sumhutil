@@ -1,6 +1,4 @@
-package top.sumhzehn.util.map;
-
-import java.io.Serializable;
+package top.sumhzehn.util;
 
 /**
  * @author SumhZehn
