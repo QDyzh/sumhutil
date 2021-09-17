@@ -9,9 +9,9 @@ import top.sumhzehn.annotation.map.MapIsKey;
 import top.sumhzehn.annotation.map.MapIsValue;
 import top.sumhzehn.util.map.MapUtil;
 
-@MapIsValue
 public class Sumh {
 
+	@MapIsKey
 	@ExcelTitle("唯一ID")
 	private Integer id;
 
@@ -23,26 +23,10 @@ public class Sumh {
 		this.id = id;
 		this.name = name;
 	}
-	
-	@MapIsKey
-	public String getKey() {
+
+	@MapIsValue
+	public String isKey() {
 		return this.id + this.name;
-	}
-	
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
 	@Override
