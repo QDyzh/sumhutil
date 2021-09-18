@@ -19,6 +19,7 @@ public class TestUtil {
     public void mapUtil() {
         List<Sumh> list = Arrays.asList(new Sumh(1, "A"), new Sumh(2, "B"));
         Map<Object, Object> map = MapUtil.listConvertMap(list);
+        map = MapUtil.listConvertMap(list, "id");
         System.out.println(map);
     }
 
@@ -28,11 +29,10 @@ public class TestUtil {
         for (int i = 0; i <10000; i++) {
             list.add(new Sumh(i+1, "张" + i));
         }
-        ExcelUtil.exportFile("D:\\DOCUMENT\\测试.xlsx", list);
+        ExcelUtil.exportDefaultFile("D:\\DOCUMENT\\测试.xlsx", list);
     }
 
     public static void main(String[] args) {
-        String a = "A";
-        System.out.println(Character.toLowerCase(a.charAt(0)));
+
     }
 }

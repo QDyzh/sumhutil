@@ -8,7 +8,7 @@ import java.util.List;
  * Excel文件工具
  **/
 public class ExcelUtil {
-    public static void exportFile(String filename, List<?> datas) {
+    public static void exportDefaultFile(String filename, List<?> datas) {
         new DefaultExcelFile().exportFile(filename, datas);
     }
 }
