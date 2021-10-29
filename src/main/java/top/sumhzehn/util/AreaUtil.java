@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
  * 2021/10/29 16:00
  **/
 public class AreaUtil {
-    public static void getMap() {
+    public static void main(String[] args) {
         //先读取js文件内容放到string中
         BufferedReader reader = null;
         StringBuilder stringBuilder = new StringBuilder();
@@ -26,5 +26,6 @@ public class AreaUtil {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println(stringBuilder.toString());
     }
 }
