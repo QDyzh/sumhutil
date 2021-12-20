@@ -35,6 +35,8 @@ public abstract class AbstractPOIFile {
 
     private void createFile(String filename) throws POIFileException {
         try {
+            File file = new File(filename);
+            if (!file.exists()) file.createNewFile();
             workbook.write(new FileOutputStream(filename));
         } catch (IOException e) {
             throw new POIFileException("File is failed", e);

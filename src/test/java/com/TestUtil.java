@@ -3,6 +3,10 @@ package com;
 import com.bean.Sumh;
 import org.junit.Test;
 import top.sumhzehn.poi.AbstractPOIFile;
+import top.sumhzehn.test.build.Builder;
+import top.sumhzehn.test.build.ConcreteBuilder;
+import top.sumhzehn.test.build.Director;
+import top.sumhzehn.test.build.Product;
 import top.sumhzehn.util.excel.DefaultExcelFile;
 import top.sumhzehn.util.excel.ExcelUtil;
 import top.sumhzehn.util.map.MapUtil;
@@ -34,5 +38,13 @@ public class TestUtil {
 
     public static void main(String[] args) {
 
+    }
+
+    @Test
+    public void build() {
+        Builder builder = new ConcreteBuilder();
+        Director d = new Director().setBuilder(builder);
+        Product p = d.construct();
+        System.out.println(p.toString());
     }
 }

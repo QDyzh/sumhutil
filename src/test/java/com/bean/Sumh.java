@@ -1,5 +1,6 @@
 package com.bean;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,9 @@ public class Sumh {
 
 	@ExcelTitle("姓名")
 	private String name;
-	
+
+	public Sumh() {}
+
 	public Sumh(Integer id, String name) {
 		super();
 		this.id = id;
@@ -35,8 +38,16 @@ public class Sumh {
 	}
 	
 	public static void main(String[] args) {
-		List<Sumh> list = Arrays.asList(new Sumh(1, "A"), new Sumh(2, "B"));
-		Map<Object, Object> map = MapUtil.listConvertMap(list);
-		System.out.println(map);
+		Class<Sumh> clz = Sumh.class;
+		Field f = null;
+		try {
+			f = clz.getDeclaredField("id");
+			f.setAccessible(true);
+			Object o = clz.newInstance();
+			f.set(o, 131);
+			System.out.println(((Sumh)o).isKey());
+		} catch (NoSuchFieldException | InstantiationException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
 	}
 }
