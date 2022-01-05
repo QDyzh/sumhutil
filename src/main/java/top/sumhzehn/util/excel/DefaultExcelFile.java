@@ -28,6 +28,8 @@ public class DefaultExcelFile extends AbstractPOIFile {
     private Row row;
 
     private Cell cell;
+    
+    private Integer sheet_max_row = 50000;
 
     public DefaultExcelFile() {
         this(null);
@@ -41,9 +43,13 @@ public class DefaultExcelFile extends AbstractPOIFile {
     @Override
     protected void importData(List<?> datas) throws POIFileException {
         if(CommUtil.listIsEmpty(datas)) throw new POIFileException("No datas");
+        long startTime = System.currentTimeMillis();
         List<ExcelItem> fields = ExcelItem.getExcelItemList(datas.get(0).getClass());
+        System.out.println("模板Excel字段获取耗时：" + (System.currentTimeMillis() - startTime)/1000.0 + "s");
         if(CommUtil.listIsEmpty(fields)) throw new POIFileException("Column is Empty");
+        startTime = System.currentTimeMillis();
         wirteData(fields, datas);
+        System.out.println("数据写入模板属性耗时：" + (System.currentTimeMillis() - startTime)/1000.0 + "s");
     }
 
     @Override
@@ -78,8 +84,9 @@ public class DefaultExcelFile extends AbstractPOIFile {
         try {
             int rowIndex = 1;
             for(T data: datas) {
-                if(rowIndex == 5001) { // 5000行后创建一个新的sheet
+                if(rowIndex > sheet_max_row) { // 默认5000行后创建一个新的sheet
                     sheet = workbook.createSheet();
+                    row = sheet.createRow(0);
                     fillTitle(titles);
                     rowIndex = 1;
                 }
@@ -89,6 +96,7 @@ public class DefaultExcelFile extends AbstractPOIFile {
                     Field field = titles.get(i).getField();
                     field.setAccessible(true);
                     cell.setCellValue(String.valueOf(field.get(data)));
+//                    cell.setCellValue("测试性能差距");
                 }
                 rowIndex++;
             }

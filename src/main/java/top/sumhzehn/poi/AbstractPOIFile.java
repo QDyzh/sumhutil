@@ -28,8 +28,12 @@ public abstract class AbstractPOIFile {
 
     public AbstractPOIFile exportFile(String filename, List<?> datas) throws POIFileException {
         if(StrUtil.isEmpty(filename)) throw new POIFileException("Filename is not empty");
+        long startTime = System.currentTimeMillis();
         importData(datas);
+        System.out.println("数据转换耗时：" + (System.currentTimeMillis() - startTime)/1000.0 + "s");
+        startTime = System.currentTimeMillis();
         createFile(filename);
+        System.out.println("创建文件耗时：" + (System.currentTimeMillis() - startTime)/1000.0 + "s");
         return this;
     }
 

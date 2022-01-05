@@ -86,6 +86,7 @@ public class ExcelUtil {
         	if (Double.class.equals(field.getType())) { return cell.getNumericCellValue(); }
         	return null;
         } else if (CellType.STRING.equals(cell.getCellType())) {
+        	if (Integer.class.equals(field.getType())) { return Integer.valueOf(cell.getStringCellValue()); }
             return cell.getStringCellValue();
         }
         return null;
