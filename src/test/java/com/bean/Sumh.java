@@ -1,14 +1,17 @@
 package com.bean;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
+
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import top.sumhzehn.annotation.excel.ExcelTitle;
 import top.sumhzehn.annotation.map.MapIsKey;
 import top.sumhzehn.annotation.map.MapIsValue;
-import top.sumhzehn.util.map.MapUtil;
+import top.sumhzehn.util.excel.ExcelUtil;
 
 public class Sumh {
 
@@ -18,6 +21,8 @@ public class Sumh {
 
 	@ExcelTitle("姓名")
 	private String name;
+	
+	private Date date;
 
 	public Sumh() {}
 
@@ -34,20 +39,41 @@ public class Sumh {
 
 	@Override
 	public String toString() {
-		return "Sumh [id=" + id + ", name=" + name + "]";
+		return "Sumh [id=" + id + ", name=" + name + ", date=" + date + "]";
 	}
-	
-	public static void main(String[] args) {
-		Class<Sumh> clz = Sumh.class;
-		Field f = null;
+
+	public static void main(String[] args) throws Exception {
 		try {
-			f = clz.getDeclaredField("id");
-			f.setAccessible(true);
-			Object o = clz.newInstance();
-			f.set(o, 131);
-			System.out.println(((Sumh)o).isKey());
-		} catch (NoSuchFieldException | InstantiationException | IllegalAccessException e) {
+			XSSFWorkbook wb =new XSSFWorkbook(new FileInputStream("F:\\import-test.xlsx"));
+			XSSFSheet sheet = wb.getSheetAt(0);
+			Date date = new Date();
+			List<Sumh> list = ExcelUtil.importFile(sheet, 4, 0, new String[]{"id", "name", "date@"}, Sumh.class, (object, field, value) -> {
+				// 测试不从excel读取值
+				if ("date".equals(field.getName())) {
+					field.setAccessible(true);
+					field.set(object, date);
+					return true;
+				}
+				// 测试处理从excel读取值
+				if ("name".equals(field.getName())) {
+					field.setAccessible(true);
+					field.set(object, value + "[dealName]");
+					return true;
+				}
+				return false;
+			});
+			System.out.println(list);
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date date) {
+		this.date = date;
+	}
+	
 }
