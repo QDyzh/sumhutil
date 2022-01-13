@@ -7,8 +7,6 @@ package top.sumhzehn.util;
  **/
 public class StrUtil {
 
-    private final static String DEFAULT_REG = "\\{.*?\\}";
-
     /**
      * 字符串为空
      * @param str 字符串
@@ -41,4 +39,5 @@ public class StrUtil {
         if(StrUtil.isEmpty(str)) return null;
         return Character.toLowerCase(str.charAt(0)) + str.substring(1);
     }
+
 }

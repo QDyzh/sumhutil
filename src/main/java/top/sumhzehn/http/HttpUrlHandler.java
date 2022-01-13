@@ -1,26 +1,94 @@
 package top.sumhzehn.http;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-/**
- * httpUrl工具类
- */
-public class HttpUrlHandler {
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.DeflateDecompressingEntity;
+import org.apache.http.client.entity.GzipDecompressingEntity;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.util.EntityUtils;
 
+public class HttpUrlHandler {
+	
 	/**
+	 * HTTP GET请求
+	 * @param url
+	 * @param charset
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
+	public static String sendGet(String url, String charset, Map<String, String> params) throws Exception {
+		return sendGet(url, charset, params, null);
+	}
+	
+	/**
+	 *  HTTP GET请求
+	 * @param url
+	 * @param charset
+	 * @param params
+	 * @param headMap
+	 * @return
+	 * @throws Exception
+	 */
+    public static String sendGet(String url, String charset, Map<String, String> params, Map<String, String> headMap) throws Exception{
+    	CloseableHttpClient client = HttpClients.createDefault();
+    	// 请求报文
+    	String urlNameString = url + "?" + mapParamToString(params, charset);
+    	// 初始化
+    	HttpGet httpGet = new HttpGet(urlNameString);
+    	// 设置请求头
+    	if(headMap != null) {
+    		for (Map.Entry<String, String> h : headMap.entrySet()) {
+        		httpGet.setHeader(h.getKey(), h.getValue());
+    		}
+    	}
+    	try {
+			return sendMsg(client.execute(httpGet), charset);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+    	return null;
+    }
+
+    public static String sendPost(String url, String charset, Map<String, String> params, Map<String, String> headMap) throws Exception{
+    	CloseableHttpClient client = HttpClients.createDefault();
+    	HttpPost httpPost = new HttpPost(url);
+    	// 设置请求头
+    	if(headMap != null) {
+    		for (Map.Entry<String, String> h : headMap.entrySet()) {
+    			httpPost.setHeader(h.getKey(), h.getValue());
+    		}
+    	}
+    	//设置参数
+        List<NameValuePair> list = new ArrayList<NameValuePair>();
+        for (Map.Entry<String, String> p : params.entrySet()) {
+        	list.add(new BasicNameValuePair(p.getKey(), p.getValue()));
+		}
+        if(list.size() > 0){
+            UrlEncodedFormEntity entity = new UrlEncodedFormEntity(list, charset);
+            httpPost.setEntity(entity);
+        }
+        return sendMsg(client.execute(httpPost), charset);
+    }
+    
+    /**
 	 * map参数转化为字符串参数
 	 * @param params
 	 * @return
 	 * @throws Exception 
 	 */
-	public static String mapParamToString(Map<String, String> params) throws Exception{
+	public static String mapParamToString(Map<String, String> params, String charset) throws Exception{
 		StringBuilder buffer = new StringBuilder();
 		int i = 0;
 		if (params != null) {
@@ -34,125 +102,35 @@ public class HttpUrlHandler {
             	if(i == 1){
                     buffer.append(entry.getKey());
                     buffer.append("=");
-                    buffer.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+                    buffer.append(URLEncoder.encode(entry.getValue(), charset));
             	}
             	else{
             		buffer.append("&");
                     buffer.append(entry.getKey());
                     buffer.append("=");
-                    buffer.append(URLEncoder.encode(entry.getValue(), "UTF-8"));
+                    buffer.append(URLEncoder.encode(entry.getValue(), charset));
             	}
             }
         }
 		return buffer.toString();
 	}
-
-	/**
-	 * 向指定URL发送GET方法的请求
-	 * @param url
-	 * @param param
-	 * @return
-	 */
-	public static String sendGet(String url, Map<String, String> params) {
-		String result = "";
-		BufferedReader in = null;
-		String urlNameString = "";
-		try {
-			urlNameString = url + "?" + mapParamToString(params);
-			URL realUrl = new URL(urlNameString);
-			// 打开和URL之间的连接
-			URLConnection connection = realUrl.openConnection();
-			// 设置通用的请求属性,根据需要自行修改
-			connection.setRequestProperty("accept", "*/*");
-			connection.setRequestProperty("connection", "Keep-Alive");
-			connection.setRequestProperty("user-agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36");
-			// 建立实际的连接
-			connection.connect();
-			
-			// 获取所有响应头字段
-			//Map<String, List<String>> map = connection.getHeaderFields();
-			// 遍历所有的响应头字段
-			//for (String key : map.keySet()) {
-			//	System.out.println(key + "--->" + map.get(key));
-			//}
-			
-			// 定义 BufferedReader输入流来读取URL的响应
-			in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-			String line;
-			while ((line = in.readLine()) != null) {
-				result += line;
-			}
-			
-			System.out.println("发送GET请求:url=" + urlNameString + "|result=" + result);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		// 使用finally块来关闭输入流
-		finally {
-			try {
-				if (in != null) {
-					in.close();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		return result;
-	}
-
-	/**
-	 * 向指定 URL 发送POST方法的请求
-	 * @param url
-	 * @param param
-	 * @return 
-	 */
-	public static String sendPost(String url, Map<String, String> params) {
-		PrintWriter out = null;
-		BufferedReader in = null;
-		String result = "";
-		try {
-			URL realUrl = new URL(url);
-			// 打开和URL之间的连接
-			URLConnection conn = realUrl.openConnection();
-			conn.setConnectTimeout(3000);
-			conn.setReadTimeout(3000);
-			// 设置通用的请求属性,根据需要自行修改
-			conn.setRequestProperty("accept", "*/*");
-			conn.setRequestProperty("connection", "Keep-Alive");
-			conn.setRequestProperty("user-agent", "Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/53.0.2785.116 Safari/537.36");
-			// 发送POST请求必须设置如下两行
-			conn.setDoOutput(true);
-			conn.setDoInput(true);
-			// 获取URLConnection对象对应的输出流
-			out = new PrintWriter(conn.getOutputStream());
-			// 发送请求参数
-			out.print(mapParamToString(params));
-			// flush输出流的缓冲
-			out.flush();
-			// 定义BufferedReader输入流来读取URL的响应
-			in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String line;
-			while ((line = in.readLine()) != null) {
-				result += line;
-			}
-			System.out.println("发送POST请求:url=" + url + "|result=" + result);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		// 使用finally块来关闭输出流、输入流
-		finally {
-			try {
-				if (out != null) {
-					out.close();
-				}
-				if (in != null) {
-					in.close();
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-		return result;
-	}
-	
+    
+    private static String sendMsg(HttpResponse response, String charset) throws Exception {
+        String result = null;
+        if(response != null){
+            HttpEntity resEntity = response.getEntity();
+            if(resEntity != null){
+                // 因服务器用的gzip编码传输。
+                if (resEntity.getContentEncoding() != null) {
+                    if("gzip".equalsIgnoreCase(resEntity.getContentEncoding().getValue())){
+                        resEntity = new GzipDecompressingEntity(resEntity);
+                    } else if("deflate".equalsIgnoreCase(resEntity.getContentEncoding().getValue())){
+                        resEntity = new DeflateDecompressingEntity(resEntity);
+                    }
+                }
+                result = EntityUtils.toString(resEntity, charset);
+            }
+        }
+        return result;
+    }
 }
