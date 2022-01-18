@@ -11,7 +11,7 @@ import org.mybatis.generator.internal.DefaultShellCallback;
 
 /**
  * 	数据层代码生成工具,根据需要自行修改配置文件
- * 	配置文件地址：resouces/generator/generatorConfig.xml
+ * 	配置文件地址：resources/generator/generatorConfig.xml
  */
 public class CodeGenerator {
 
