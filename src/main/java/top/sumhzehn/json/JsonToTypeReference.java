@@ -30,7 +30,7 @@ public class JsonToTypeReference {
 	public static ObjectMapper buildObjectMapper() {
         if(mapper == null) {
             mapper = new ObjectMapper();
-            //处理非标准JSON格式串(微信返回信息中的串)
+            // 处理非标准JSON格式串(微信返回信息中的串)
             mapper.configure(Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true);
             mapper.configure(Feature.ALLOW_BACKSLASH_ESCAPING_ANY_CHARACTER, true);
             mapper.setDateFormat(sdf);
